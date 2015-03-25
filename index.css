@@ -1,0 +1,74 @@
+#main
+{
+    background-color: #eeeeee;
+    border: 1px solid #dddddd;
+}
+
+#drawSpace
+{
+    position: fixed;
+    width: calc(100% - (250px + 20px + 1px));
+    height: calc(100% - (32px*3));
+    margin: 10px;
+    margin-top: 45px;
+    overflow: scroll;
+}
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 7px;
+    height: 7px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0,0,0,.5);
+    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+#title
+{
+    background-color: black;
+    color: white;
+    padding: 10px;
+    width: calc(100% - (250px + 20px + 1px));
+    position: fixed;
+    z-index: 1000;
+}
+
+#timeslide
+{
+    width: 650px;
+    float: right;
+}
+
+#timebar
+{
+    background-color: black;
+    color: white;
+    padding: 10px;
+    bottom: 0;
+    width: calc(100% - (250px + 20px + 1px));
+    position: fixed;
+    z-index: 1000;
+}
+
+#toolbar
+{
+    float: right;
+}
+
+#sidebar
+{
+    right: 0;
+    width: 250px;
+    height: 100%;
+    border: 1px solid black;
+    position: fixed;
+    z-index: 1000;
+}
+
+body {
+    padding: 0px;
+    margin: 0px;
+    font-family: Helvetica, Arial, sans-serif;
+}
