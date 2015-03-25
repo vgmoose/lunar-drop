@@ -1,3 +1,7 @@
+var zoom = 1;
+
+var map = {height: "500", width: "700"};
+
 $(document).ready(function(){
     $("#timeslide").on("input", function(){
         $("#timebox").val(convertMinutesToTime($(this).val()));
@@ -8,6 +12,31 @@ $(document).ready(function(){
     });
     
     $("#timebox").val("06:00");
+    
+    $("body").on("mousewheel", function(e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        if(e.originalEvent.wheelDelta /120 > 0) {
+            zoom += 0.1;
+        }
+        else{
+            zoom -= 0.1;
+        }
+        
+        if (zoom < 0.1)
+            zoom = 0.1;
+        
+        if (zoom > 4)
+            zoom = 4;
+                
+        var width = zoom*map.width;
+        var height = zoom*map.height;
+        $('#main').css({'width': width+"px", 'height': height+"px"});
+
+    }
+});
 
 });
 
