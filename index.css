@@ -103,3 +103,7 @@ body {
     margin: 0px;
     font-family: Helvetica, Arial, sans-serif;
 }
+
+input[type="time"]::-webkit-clear-button {
+    display: none;
+}

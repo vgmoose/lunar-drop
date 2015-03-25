@@ -1,6 +1,7 @@
 var zoom = 1;
 var canvas;
 var context;
+var gridIsOn = true;
 
 $(document).ready(function(){
     $("#timeslide").on("input", function(){
@@ -19,10 +20,10 @@ $(document).ready(function(){
         e.stopImmediatePropagation();
 
         if(e.originalEvent.wheelDelta /120 > 0) {
-            zoom += 0.1;
+            zoom += 0.03;
         }
         else{
-            zoom -= 0.1;
+            zoom -= 0.03;
         }
         
         performZoom();
@@ -30,6 +31,11 @@ $(document).ready(function(){
     }
         
 });
+
+          canvas = document.getElementById('main');
+      context = canvas.getContext('2d');
+    
+        context.imageSmoothingEnabled = false; /// future
 
             draw();
 });
@@ -116,16 +122,18 @@ function performZoom()
         $("#zoomdiv").delay(500).fadeTo(500, 0);
 }
 
+function gridToggle()
+{
+    gridIsOn = !gridIsOn;
+    draw();
+}
+
 function draw()
 {
-      canvas = document.getElementById('main');
-      context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
     
-    context.webkitImageSmoothingEnabled = false;
-context.mozImageSmoothingEnabled = false;
-context.imageSmoothingEnabled = false; /// future
-
-    drawGrid();
+    if (gridIsOn)
+        drawGrid();
 //      var size = 10;
 //      var p = [[188, 130], [140, 10], [300, 10], [388, 170]];
 //
