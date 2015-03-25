@@ -1,6 +1,6 @@
 var zoom = 1;
-
-var map = {height: "500", width: "700"};
+var canvas;
+var context;
 
 $(document).ready(function(){
     $("#timeslide").on("input", function(){
@@ -31,13 +31,21 @@ $(document).ready(function(){
         if (zoom > 4)
             zoom = 4;
                 
-        var width = zoom*map.width;
-        var height = zoom*map.height;
+        var width = zoom*canvas.width;
+        var height = zoom*canvas.height;
         $('#main').css({'width': width+"px", 'height': height+"px"});
+        
+        // notify the new zoom level
+        $("#zoomdiv").html(Math.round((zoom*100))+"%");
+        $("#zoomdiv").stop().clearQueue();
+        $("#zoomdiv").fadeTo(10, 1);
+        $("#zoomdiv").delay(500).fadeTo(500, 0);
 
     }
+        
 });
 
+            draw();
 });
 
 function convertMinutesToTime(curMin)
@@ -68,4 +76,52 @@ function convertTimeToMinutes(curTime)
         curMin += 1440;
     
     return curMin;
+}
+
+function drawGrid()
+{
+    // draw lines
+    for (var x=0.5; x<canvas.width; x+=16)
+    {
+        
+        context.strokeStyle = "#aaa";
+        context.beginPath();
+        context.moveTo(0.5, x);
+        context.lineTo(canvas.width, x);
+        context.stroke();
+        
+        context.beginPath();
+        context.moveTo(x, 0.5);
+        context.lineTo(x, canvas.height);
+        context.stroke();
+    }
+}
+
+function draw()
+{
+      canvas = document.getElementById('main');
+      context = canvas.getContext('2d');
+    
+    context.webkitImageSmoothingEnabled = false;
+context.mozImageSmoothingEnabled = false;
+context.imageSmoothingEnabled = false; /// future
+
+    drawGrid();
+//      var size = 10;
+//      var p = [[188, 130], [140, 10], [300, 10], [388, 170]];
+//
+//      context.beginPath();
+//      context.moveTo(p[0][0], p[0][1]);
+//      context.bezierCurveTo(p[1][0], p[1][1], p[2][0], p[2][1], p[3][0], p[3][1]);
+//      context.lineWidth = 10;
+//
+//      // line color
+//      context.strokeStyle = 'black';
+//      context.stroke();
+//
+//      context.fillStyle = 'red';
+//      context.fillRect(p[0][0], p[0][1], size, size);
+//      context.fillRect(p[1][0], p[1][1], size, size);
+//      context.fillRect(p[2][0], p[2][1], size, size);
+//      context.fillRect(p[3][0], p[3][1], size, size);
 }

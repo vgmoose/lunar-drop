@@ -4,6 +4,27 @@
     border: 1px solid #dddddd;
 }
 
+input
+{
+    font-family: Arial;
+}
+
+#zoomdiv
+{
+    position: fixed;
+    background-color: white;
+    padding: 5px;
+    margin: 5px;
+    color: #666;
+    font-size: 13px;
+    width: 40px;
+    height: 12px;
+    opacity: 0;
+    text-align: center;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+}
+
 #drawSpace
 {
     position: fixed;
