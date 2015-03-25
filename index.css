@@ -2,6 +2,7 @@
 {
     background-color: #eeeeee;
     border: 1px solid #dddddd;
+/*    display: none;*/
 }
 
 input
@@ -15,6 +16,13 @@ input
     margin-right: 5px;
     margin-left: 5px;
     width: 25px;
+}
+
+#lunartitle img
+{
+    margin-right: 10px;
+    margin-top: -2px;
+    float: left;
 }
 
 #zoomdiv
@@ -102,13 +110,68 @@ input
     color: #222;
 }
 
+table
+{
+    width: 100%;
+}
+
+tr > td:first-child
+{
+    text-align: right;
+    width: 50px;
+    padding-right: 20px;
+    font-weight: 100;
+}
+
+tr > td:nth-child(2)
+{
+    font-size: 13px;
+    font-weight: 100;
+}
+
+input
+{
+     font-size: 13px;
+    width: 130px;
+}
+
+#mapheight, #mapwidth
+{
+    width: 40px;
+    text-align: right;
+    font-size: 13px;
+}
+
 .side_content
 {
     display: none;
     margin: 10px;
-    margin-top: 40px;
-    text-align: center;
+    margin-top: 10px;
+    font-weight: 100;
 
+
+}
+
+.side_content h4
+{
+    font-weight: 300;
+    font-size: 17px;
+    width: 244px;
+    margin-top: 30px;
+    margin-left: -10px;
+    margin-bottom: 10px;
+    padding: 2px;
+    background-color: #eee;
+    text-align: center;
+    color: black;
+}
+
+.inner_input
+{
+    line-height: 30px;
+    margin-left: 15px;
+    font-size: 13px;
+    text-align: left;
 }
 
 .active_side
@@ -146,6 +209,7 @@ input
     float: right;
     margin-top: -6px;
     margin-bottom: -10px;
+/*    display: none;*/
 }
 
 #sidebar
@@ -157,6 +221,7 @@ input
     position: fixed;
     z-index: 1000;
     background-color: #f8f8f8;
+/*    pointer-events: none;*/
 }
 
 body {

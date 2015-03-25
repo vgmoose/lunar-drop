@@ -4,11 +4,12 @@
 <script src="index.js"></script>
 <title>Lunar Drop</title>
 <div id="title">
-    <span id="lunartitle">Lunar Drop</span> - Time Synchronization Game Engine
+    <span id="lunartitle"><img src="favicon.ico"></img> Lunar Drop</span> - Time Synchronization Game Engine
     <span id="toolbar">
-    <a href="javascript:zoomOut()"><img class="toolbutton" src="images/zoomout.png" alt="Zoom Out"></img></a>
-    <a href="javascript:zoomIn()"><img class="toolbutton" src="images/zoomin.png" alt="Zoom In"></img></a>
-    <a href="javascript:gridToggle()"><img class="toolbutton" src="images/grid.png" alt="Toggle Grid"></img></a>
+<!--        <a href="javascript:unloadMap()"><img class="toolbutton" src="images/back.png" alt="Unload Map"></img></a>-->
+        <a href="javascript:zoomOut()"><img class="toolbutton" src="images/zoomout.png" alt="Zoom Out"></img></a>
+        <a href="javascript:zoomIn()"><img class="toolbutton" src="images/zoomin.png" alt="Zoom In"></img></a>
+        <a href="javascript:gridToggle()"><img class="toolbutton" src="images/grid.png" alt="Toggle Grid"></img></a>
     </span>
 </div>
 <div id="drawSpace">
@@ -21,7 +22,16 @@
         <a href="javascript:goTab(2)" class="tab">People</a>
         <a href="javascript:goTab(3)" class="tab">Tiles</a>
     </div>
-    <div class="active_side side_content">Hi</div>
+    <div class="side_content active_side">
+        <h4>Location Name</h4>
+        <table><tr><td>Name</td><td><input id="mapname" value="Unnamed Location"></input></td></tr></table>
+        <h4>Dimensions</h4>
+    <table>
+                <tr><td>Width</td><td><input type="number" id="mapwidth" min=1 max=2000 value=44></input> tiles</td></tr>
+                <tr><td>Height</td><td><input type="number" id="mapheight" min=1 max=2000 value=32></input> tiles</td></tr>
+    </table>
+        <h4></h4>
+    </div>
     <div class="side_content">You</div>
     <div class="side_content">There</div>
 </div>

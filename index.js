@@ -120,6 +120,7 @@ function performZoom()
         $("#zoomdiv").stop().clearQueue();
         $("#zoomdiv").fadeTo(10, 1);
         $("#zoomdiv").delay(500).fadeTo(500, 0);
+
 }
 
 function goTab(value)
