@@ -122,6 +122,16 @@ function performZoom()
         $("#zoomdiv").delay(500).fadeTo(500, 0);
 }
 
+function goTab(value)
+{
+    value -= 1;
+    $("#tabs .tab").removeClass("active_tab");
+    $($("#tabs .tab")[value]).addClass("active_tab");
+    
+    $("#sidebar .side_content").removeClass("active_side");
+    $($("#sidebar .side_content")[value]).addClass("active_side");
+}
+
 function gridToggle()
 {
     gridIsOn = !gridIsOn;

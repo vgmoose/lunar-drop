@@ -36,7 +36,7 @@ input
 #drawSpace
 {
     position: fixed;
-    width: calc(100% - (250px + 20px + 1px));
+    width: calc(100% - (248px + 20px + 1px));
     height: calc(100% - (32px*3));
     margin: 10px;
     margin-top: 45px;
@@ -54,20 +54,28 @@ input
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 
+#lunartitle
+{
+    font-weight: 500;
+}
+
 #title
 {
     background-color: black;
     color: white;
     padding: 10px;
-    width: calc(100% - (250px + 20px + 1px));
+    width: calc(100% - (248px + 20px + 1px));
     position: fixed;
     z-index: 1000;
+    font-weight: 100;
 }
 
 #timeslide
 {
-    width: 650px;
+    width: calc(100% - 150px);
     float: right;
+    margin-right: 25px;
+
 }
 
 #timebar
@@ -76,9 +84,61 @@ input
     color: white;
     padding: 10px;
     bottom: 0;
-    width: calc(100% - (250px + 20px + 1px));
+    width: calc(100% - (248px + 20px + 1px));
     position: fixed;
     z-index: 1000;
+}
+
+#tabs
+{
+    margin-left: -1px;
+    margin-top: -1px;   
+    position: fixed;
+}
+
+.tab:not(.active_tab)
+{
+    line-height: 1.25;
+    color: #222;
+}
+
+.side_content
+{
+    display: none;
+    margin: 10px;
+    margin-top: 40px;
+    text-align: center;
+
+}
+
+.active_side
+{
+    display: inline-block !important;
+}
+
+.active_tab
+{
+    border: 1px solid black !important;
+    background-color: #f8f8f8 !important;
+    border-bottom: 0px !important;
+    font-weight: 400 !important;
+/*    margin-top: -1px;*/
+}
+
+.tab
+{
+    float: left;
+    border: 1px solid #cccccc;
+    padding: 6px;
+    width: 69px;
+    text-align: center;
+    background-color: #ddd;
+    border-bottom: 1px solid black;
+    font-weight: 100;
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    height: 16px;
 }
 
 #toolbar
@@ -91,17 +151,30 @@ input
 #sidebar
 {
     right: 0;
-    width: 250px;
+    width: 248px;
     height: 100%;
     border: 1px solid black;
     position: fixed;
     z-index: 1000;
+    background-color: #f8f8f8;
 }
 
 body {
     padding: 0px;
     margin: 0px;
     font-family: Helvetica, Arial, sans-serif;
+}
+
+input[type="time"]
+{
+    border: 0px;
+    background-color: black;
+    color: white;
+    font-size: 20px;
+    margin-top: -5px;
+    margin-bottom:-10px;
+    height: 30px;
+    width: 108px;
 }
 
 input[type="time"]::-webkit-clear-button {

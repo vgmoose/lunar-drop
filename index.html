@@ -4,18 +4,27 @@
 <script src="index.js"></script>
 <title>Lunar Drop</title>
 <div id="title">
-    <b>Lunar Drop</b> - Time Synchronization Game Engine
+    <span id="lunartitle">Lunar Drop</span> - Time Synchronization Game Engine
     <span id="toolbar">
-    <a href="javascript:zoomOut()"><img class="toolbutton" src="images/zoomout.png"></img></a>
-    <a href="javascript:zoomIn()"><img class="toolbutton" src="images/zoomin.png"></img></a>
-    <a href="javascript:gridToggle()"><img class="toolbutton" src="images/grid.png"></img></a>
+    <a href="javascript:zoomOut()"><img class="toolbutton" src="images/zoomout.png" alt="Zoom Out"></img></a>
+    <a href="javascript:zoomIn()"><img class="toolbutton" src="images/zoomin.png" alt="Zoom In"></img></a>
+    <a href="javascript:gridToggle()"><img class="toolbutton" src="images/grid.png" alt="Toggle Grid"></img></a>
     </span>
 </div>
 <div id="drawSpace">
     <div id="zoomdiv">100%</div>
     <canvas id="main" width=705 height=513></canvas>
 </div>
-<div id="sidebar"></div>
+<div id="sidebar">
+    <div id="tabs">
+        <a href="javascript:goTab(1)" class="tab active_tab">Map</a>
+        <a href="javascript:goTab(2)" class="tab">People</a>
+        <a href="javascript:goTab(3)" class="tab">Tiles</a>
+    </div>
+    <div class="active_side side_content">Hi</div>
+    <div class="side_content">You</div>
+    <div class="side_content">There</div>
+</div>
 <div id="timebar">
     <input id="timebox" type="time"></input>
     <input id="timeslide" max=1439 min=0 value=0 type="range"/>
