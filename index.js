@@ -25,21 +25,7 @@ $(document).ready(function(){
             zoom -= 0.1;
         }
         
-        if (zoom < 0.1)
-            zoom = 0.1;
-        
-        if (zoom > 4)
-            zoom = 4;
-                
-        var width = zoom*canvas.width;
-        var height = zoom*canvas.height;
-        $('#main').css({'width': width+"px", 'height': height+"px"});
-        
-        // notify the new zoom level
-        $("#zoomdiv").html(Math.round((zoom*100))+"%");
-        $("#zoomdiv").stop().clearQueue();
-        $("#zoomdiv").fadeTo(10, 1);
-        $("#zoomdiv").delay(500).fadeTo(500, 0);
+        performZoom();
 
     }
         
@@ -95,6 +81,39 @@ function drawGrid()
         context.lineTo(x, canvas.height);
         context.stroke();
     }
+}
+
+function zoomIn()
+{
+    zoom += .25;
+    zoom = (Math.round(zoom * 4) / 4);
+    performZoom();
+}
+
+function zoomOut()
+{
+    zoom -= .25;
+    zoom = (Math.round(zoom * 4) / 4);
+    performZoom();
+}
+
+function performZoom()
+{
+    if (zoom < 0.1)
+            zoom = 0.1;
+        
+        if (zoom > 4)
+            zoom = 4;
+                
+        var width = zoom*canvas.width;
+        var height = zoom*canvas.height;
+        $('#main').css({'width': width+"px", 'height': height+"px"});
+        
+        // notify the new zoom level
+        $("#zoomdiv").html(Math.round((zoom*100))+"%");
+        $("#zoomdiv").stop().clearQueue();
+        $("#zoomdiv").fadeTo(10, 1);
+        $("#zoomdiv").delay(500).fadeTo(500, 0);
 }
 
 function draw()
