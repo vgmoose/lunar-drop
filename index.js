@@ -3,6 +3,8 @@ var canvas;
 var context;
 var gridIsOn = true;
 
+var map = {width: 44, height: 32};
+
 $(document).ready(function(){
     $("#timeslide").on("input", function(){
         $("#timebox").val(convertMinutesToTime($(this).val()));
@@ -14,7 +16,20 @@ $(document).ready(function(){
     
     $("#timebox").val("06:00");
     
+    canvas = document.getElementById('main');
+    context = canvas.getContext('2d');
+    
+    $(canvas).on('contextmenu', function(e) {
+        displayContextAt(parseInt(e.offsetX/zoom), parseInt(e.offsetY/zoom), e.pageX, e.pageY);
+        e.preventDefault();
+    }); 
+    
+    $("body").on("mousedown", function(e) {
+        dismissContext();
+    });
+    
     $("body").on("mousewheel", function(e) {
+    dismissContext();
     if (e.ctrlKey) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -31,9 +46,6 @@ $(document).ready(function(){
     }
         
 });
-
-          canvas = document.getElementById('main');
-      context = canvas.getContext('2d');
     
         context.imageSmoothingEnabled = false; /// future
 
@@ -73,10 +85,10 @@ function convertTimeToMinutes(curTime)
 function drawGrid()
 {
     // draw lines
-    for (var x=0.5; x<canvas.width; x+=16)
+    for (var x=16.5; x<canvas.width; x+=16)
     {
         
-        context.strokeStyle = "#aaa";
+        context.strokeStyle = 'rgba(170,170,170,0.7)';
         context.beginPath();
         context.moveTo(0.5, x);
         context.lineTo(canvas.width, x);
@@ -87,6 +99,13 @@ function drawGrid()
         context.lineTo(x, canvas.height);
         context.stroke();
     }
+    
+}
+
+function resizeCanvas()
+{
+    canvas.width = map.width*16;
+    canvas.height = map.height*16;
 }
 
 function zoomIn()
@@ -108,18 +127,23 @@ function performZoom()
     if (zoom < 0.1)
             zoom = 0.1;
         
-        if (zoom > 4)
-            zoom = 4;
+        if (zoom > 2)
+            zoom = 2;
                 
         var width = zoom*canvas.width;
         var height = zoom*canvas.height;
         $('#main').css({'width': width+"px", 'height': height+"px"});
+    
+//        var divheight = parseInt($("#drawSpace").css('height'));
+//        var divwidth = parseInt($("#drawSpace").css('width'));
+//        
+//        $('#main').css({'padding-left': (divwidth/2 - width/2)+"px", 'padding-top': (divheight/2 - height/2)+"px"});
         
         // notify the new zoom level
         $("#zoomdiv").html(Math.round((zoom*100))+"%");
         $("#zoomdiv").stop().clearQueue();
-        $("#zoomdiv").fadeTo(10, 1);
-        $("#zoomdiv").delay(500).fadeTo(500, 0);
+        $("#zoomdiv").show().fadeTo(10, 1);
+        $("#zoomdiv").delay(500).fadeTo(500, 0, function() { $(this).hide(); });
 
 }
 
@@ -139,8 +163,64 @@ function gridToggle()
     draw();
 }
 
+function dismissContext()
+{
+    if ($(".context_menu").length == 1)
+    {
+        document.body.removeChild($(".context_menu")[0]);
+        draw();
+    }
+}
+
+function createChar()
+{
+    
+}
+
+function removeChar()
+{
+    
+}
+
+function canvasHighlight(x, y)
+{
+    context.strokeStyle = "#238df5";
+    context.strokeWidth = "2";
+    context.strokeRect(Math.floor(x/16)*16, Math.floor(y/16)*16, 16, 16);
+}
+
+function displayContextAt(x, y, px, py)
+{
+    dismissContext();
+    var menu = document.createElement("div");
+    $(menu).addClass("context_menu");
+    
+    canvasHighlight(x, y);
+    
+    // do specific action based on x anad y coordinates in canvas
+    var elem = document.createElement("div");
+    $(elem).addClass("context_elem");
+    elem.innerHTML = "Create Character";
+    elem.onclick = createChar(x, y);
+    menu.appendChild(elem);
+    
+    elem = document.createElement("div");
+    $(elem).addClass("context_elem");
+    elem.innerHTML = "Remove Character";
+    elem.onclick = removeChar(x, y);
+    menu.appendChild(elem);
+    
+    
+    document.body.appendChild(menu);
+    $(menu).css("margin-top", py);
+    $(menu).css("margin-left", px);
+}
+
 function draw()
 {
+    // resizeCanvas
+    resizeCanvas();
+    
     context.clearRect(0, 0, canvas.width, canvas.height);
     
     if (gridIsOn)
