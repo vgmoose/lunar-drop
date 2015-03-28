@@ -43,6 +43,11 @@ $(document).ready(function(){
         // if there's a character on the mousedown position
         if (char)
             dragging = char;
+        
+        var point = pointAt(e.offsetX, e.offsetY);
+        
+        if (point)
+            dragging = point;
 
         e.preventDefault();
     }); 
@@ -51,8 +56,16 @@ $(document).ready(function(){
         
         if (dragging)
         {
-            dragging.sched[time].x = parseInt(e.offsetX/zoom/16);
-            dragging.sched[time].y = parseInt(e.offsetY/zoom/16);
+            if (dragging.sched)
+            {
+                dragging.sched[time].x = parseInt(e.offsetX/zoom/16);
+                dragging.sched[time].y = parseInt(e.offsetY/zoom/16);
+            }
+            else if (dragging.x)
+            {
+                
+            }
+            
             draw();
         }
         
@@ -102,6 +115,11 @@ function attachAllMenuListeners()
     // tabz
     $(".tab").click(function() { goTab((1+$(this).index())); });
 };
+
+function pointAt()
+{
+    
+}
 
 function convertMinutesToTime(curMin)
 {    
@@ -363,6 +381,11 @@ function displayContextAt(x, y, px, py)
     $(menu).css("margin-left", px);
 }
 
+function midPoint(x1, y1, x2, y2)
+{
+    return {x: (x1+x2)/2, y: (y1+y2)/2};
+}
+
 function prevKey(time)
 {
     var lastKey = 0;
@@ -393,12 +416,58 @@ function draw()
         
         if (!pos)
             continue;
+        
+        var lastKey = me.prevKey(time-1);
+        
+        // a previous keyframe exists 
+        if (lastKey != key && lastKey)
+        {
+            var past = me.sched[lastKey];
+            // draw the last keyframe
+            context.globalAlpha = 0.5;
+            context.drawImage(me.image, past.x*16, past.y*16);
+            context.globalAlpha = 1;
+            
+            context.beginPath();
+            context.moveTo(past.x*16+8, past.y*16+8);
+                        
+            var midpoint = midPoint(past.x*16+8, past.y*16+8, pos.x*16+8, pos.y*16+8);
+            
+            // draw the path
+            if (pos.type == "none" || (pos.x == past.x && pos.y == past.y))
+            {
+                
+            }
+            else if (pos.type == "linear")
+            {
+                pos.cx1 = midpoint.x;
+                pos.cy1 = midpoint.y;
+                context.fillRect(pos.cx1-2.5, pos.cy1-2.5, 5, 5);
+                context.quadraticCurveTo(pos.cx1, pos.cy1, pos.x*16+8, pos.y*16+8);
+//                context.lineTo(pos.x*16+8, pos.y*16+8);
+            }
+            else if (pos.type == "quadratic")
+            {
+                context.fillRect(pos.cx1-2.5, pos.cy1-2.5, 5, 5);
+                context.quadraticCurveTo(pos.cx1, pos.cy1, pos.x*16+8, pos.y*16+8);
+            }
+            else if (pos.type == "bezier")
+            {
+                context.fillRect(pos.cx1-2.5, pos.cy1-2.5, 5, 5);
+                context.fillRect(pos.cx2-2.5, pos.cy2-2.5, 5, 5);
+                context.bezierCurveTo(pos.cx1, pos.cy1, pos.cx2, pos.cy2, pos.x*16+8, pos.y*16+8);
+            }
+            
+            context.stroke();
+        }
 
         if (key != time)
-            context.globalAlpha = 0.5
+            context.globalAlpha = 0.5;
+             
         context.drawImage(me.image, pos.x*16, pos.y*16);
+        
         if (key != time)
-            context.globalAlpha = 1
+            context.globalAlpha = 1;
     }
     
     if (gridIsOn)
