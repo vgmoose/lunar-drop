@@ -2,19 +2,26 @@ var zoom = 1;
 var canvas;
 var context;
 var gridIsOn = true;
+var time;
+var defaultImg;
+var dragging = null;
 
-var map = {width: 44, height: 32};
+var map = {width: 44, height: 32, chars: []};
 
 $(document).ready(function(){
     $("#timeslide").on("input", function(){
-        $("#timebox").val(convertMinutesToTime($(this).val()));
+        time = $(this).val();
+        draw();
+        $("#timebox").val(convertMinutesToTime(time));
     });
     $("#timebox").on("input", function(){
-        console.log(convertTimeToMinutes($(this).val()));
-        $("#timeslide").val(convertTimeToMinutes($(this).val()));
+        time = convertTimeToMinutes($(this).val());
+        draw();
+        $("#timeslide").val(time);
     });
     
     $("#timebox").val("06:00");
+    time = 0;
     
     canvas = document.getElementById('main');
     context = canvas.getContext('2d');
@@ -24,9 +31,40 @@ $(document).ready(function(){
         e.preventDefault();
     }); 
     
-    $("body").on("mousedown", function(e) {
+    $("body").on("click", function(e) {
         dismissContext();
     });
+    
+    $(canvas).on('mousedown', function(e) {
+        dismissContext();
+        
+        var char = characterAt(e.offsetX/zoom, e.offsetY/zoom, false);
+        
+        // if there's a character on the mousedown position
+        if (char)
+            dragging = char;
+
+        e.preventDefault();
+    }); 
+    
+    $(canvas).on('mousemove', function(e) {
+        
+        if (dragging)
+        {
+            dragging.sched[time].x = parseInt(e.offsetX/zoom/16);
+            dragging.sched[time].y = parseInt(e.offsetY/zoom/16);
+            draw();
+        }
+        
+        e.preventDefault();
+    }); 
+    
+    $(canvas).on('mouseup', function(e) {
+        
+       dragging = null;
+        
+        e.preventDefault();
+    }); 
     
     $("body").on("mousewheel", function(e) {
     dismissContext();
@@ -46,11 +84,24 @@ $(document).ready(function(){
     }
         
 });
+    defaultImg = new Image();
+    defaultImg.src = "images/bluemoon.png";
     
         context.imageSmoothingEnabled = false; /// future
 
+    attachAllMenuListeners();
             draw();
 });
+
+function attachAllMenuListeners()
+{
+    $("#zoomout").click(function() { zoomOut() });
+    $("#zoomin").click(function() { zoomIn() });
+    $("#gridtoggle").click(function() { gridToggle() });
+    
+    // tabz
+    $(".tab").click(function() { goTab((1+$(this).index())); });
+};
 
 function convertMinutesToTime(curMin)
 {    
@@ -172,14 +223,52 @@ function dismissContext()
     }
 }
 
-function createChar()
+function createChar(x, y)
 {
+    var newChar = {name: "Unnamed Character",
+                    image: defaultImg,
+                    prevKey: prevKey,
+                   sched: {}
+                   };
+    newChar.sched[time] = {type: "static", x: parseInt(x/16), y: parseInt(y/16)};
     
+    map.chars.push(newChar);
+    
+    goTab(2);
 }
 
 function removeChar()
 {
     
+}
+
+// returns whether or not a character exists at the given x y, 
+// and if so returns that character
+// if anyTime is false, the current time is used
+function characterAt(cx, cy, anyTime)
+{
+    var returnme = null;
+    
+    cx = Math.floor(cx/16);
+    cy = Math.floor(cy/16);
+    
+    var chars = map.chars;
+    for (var x=0; x<chars.length; x++)
+    {
+        var pos;
+        if (anyTime)
+            pos = chars[x].sched[chars[x].prevKey()];
+        else
+            pos = chars[x].sched[time];
+        
+        if (!pos)
+            continue;
+
+        if (cx == pos.x && cy == pos.y)
+            returnme = chars[x];
+    }
+    
+    return returnme;
 }
 
 function canvasHighlight(x, y)
@@ -189,6 +278,14 @@ function canvasHighlight(x, y)
     context.strokeRect(Math.floor(x/16)*16, Math.floor(y/16)*16, 16, 16);
 }
 
+function insertKeyframe(char)
+{
+    var lastKey = char.prevKey();
+    var pos = char.sched[lastKey];
+    char.sched[time] = {type: "linear", x: pos.x, y: pos.y};
+    draw();
+}
+
 function displayContextAt(x, y, px, py)
 {
     dismissContext();
@@ -196,24 +293,88 @@ function displayContextAt(x, y, px, py)
     $(menu).addClass("context_menu");
     
     canvasHighlight(x, y);
+    var char = characterAt(x, y, true);
     
-    // do specific action based on x anad y coordinates in canvas
-    var elem = document.createElement("div");
-    $(elem).addClass("context_elem");
-    elem.innerHTML = "Create Character";
-    elem.onclick = createChar(x, y);
-    menu.appendChild(elem);
+    // if a character is here
+    if (char)
+    {
+        // if a character is here at this time
+        if (char.sched[time])
+        {
+            var count = Object.keys(char.sched).length;
+            // if this is the only keyframe
+            if (count == 1)
+            {
+                var elem = document.createElement("div");
+                $(elem).addClass("context_elem");
+                elem.innerHTML = "Remove Character";
+                elem.onclick = function(){ removeChar(char); };
+                menu.appendChild(elem);
+            }
+            else
+            {
+                var elem = document.createElement("div");
+                $(elem).addClass("context_elem");
+                elem.innerHTML = "Remove Keyframe";
+    //            elem.onclick = function(){ removeKeyframe(char); };
+                menu.appendChild(elem);
+             }
+        }
+        else
+        {
+            var elem = document.createElement("div");
+            $(elem).addClass("context_elem");
+            elem.innerHTML = "Insert Keyframe";
+            elem.onclick = function(){ insertKeyframe(char); };
+            menu.appendChild(elem);
+        }
+    }
+    else
+    {
+        // do specific action based on x anad y coordinates in canvas
+        var elem = document.createElement("div");
+        $(elem).addClass("context_elem");
+        elem.innerHTML = "Add Character";
+        elem.onclick = function(){ createChar(x, y); };
+        menu.appendChild(elem);
+
+        elem = document.createElement("div");
+        $(elem).addClass("context_elem");
+        elem.innerHTML = "New Event";
+    //    elem.onclick =  function(){ createEvent(x, y); };
+        menu.appendChild(elem);
+
+        elem = document.createElement("div");
+        $(elem).addClass("context_elem");
+        elem.innerHTML = "Create Warp";
+    //    elem.onclick = create(x, y);
+        menu.appendChild(elem);
+    }
     
-    elem = document.createElement("div");
-    $(elem).addClass("context_elem");
-    elem.innerHTML = "Remove Character";
-    elem.onclick = removeChar(x, y);
-    menu.appendChild(elem);
+//    elem = document.createElement("div");
+//    $(elem).addClass("context_elem");
+//    elem.innerHTML = "Remove Character";
+//    elem.onclick = removeChar(x, y);
+//    menu.appendChild(elem);
     
     
     document.body.appendChild(menu);
     $(menu).css("margin-top", py);
     $(menu).css("margin-left", px);
+}
+
+function prevKey(time)
+{
+    var lastKey = 0;
+    var me = this.sched;
+        
+    for (var key in me) {
+          if (parseInt(key) > parseInt(time))
+              break;
+          lastKey = key;
+    }
+
+    return lastKey;
 }
 
 function draw()
@@ -222,6 +383,23 @@ function draw()
     resizeCanvas();
     
     context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // draw characters
+    for (var x=0; x<map.chars.length; x++)
+    {
+        var me = map.chars[x];
+        var key = me.prevKey(time);   
+        var pos = me.sched[key];
+        
+        if (!pos)
+            continue;
+
+        if (key != time)
+            context.globalAlpha = 0.5
+        context.drawImage(me.image, pos.x*16, pos.y*16);
+        if (key != time)
+            context.globalAlpha = 1
+    }
     
     if (gridIsOn)
         drawGrid();

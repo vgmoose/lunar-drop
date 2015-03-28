@@ -8,9 +8,9 @@
     <span id="lunartitle"><img src="favicon.ico"></img> Lunar Drop</span> - Time Synchronization Game Engine
     <span id="toolbar">
 <!--        <a href="javascript:unloadMap()"><img class="toolbutton" src="images/back.png" alt="Unload Map"></img></a>-->
-        <a href="javascript:zoomOut()"><img class="toolbutton" src="images/zoomout.png" alt="Zoom Out"></img></a>
-        <a href="javascript:zoomIn()"><img class="toolbutton" src="images/zoomin.png" alt="Zoom In"></img></a>
-        <a href="javascript:gridToggle()"><img class="toolbutton" src="images/grid.png" alt="Toggle Grid"></img></a>
+        <img id="zoomout" class="toolbutton" src="images/zoomout.png" alt="Zoom Out"></img>
+        <img id="zoomin" class="toolbutton" src="images/zoomin.png" alt="Zoom In"></img>
+        <img id="gridtoggle" class="toolbutton" src="images/grid.png" alt="Toggle Grid"></img>
     </span>
 </div>
 <div id="drawSpace">
@@ -19,9 +19,9 @@
 </div>
 <div id="sidebar">
     <div id="tabs">
-        <a href="javascript:goTab(1)" class="tab active_tab">Map</a>
-        <a href="javascript:goTab(2)" class="tab">People</a>
-        <a href="javascript:goTab(3)" class="tab">Tiles</a>
+        <span class="tab active_tab">Map</span>
+        <span class="tab">People</span>
+        <span class="tab">Tiles</span>
     </div>
     <div class="side_content active_side">
         <h4>Location Name</h4>
@@ -33,7 +33,12 @@
     </table>
         <h4>Background</h4>
 <div class="side_notification">Must be exactly 704x512 pixels.</div>
-        <table><tr><td>URL</td><td><input type="url" placeholder="http://example"></input></td></tr></table>
+        <table><tr><td>URL</td><td><input type="url" placeholder="http://example.png"></input></td></tr></table>
+<h4>Settings</h4>
+<table>
+    <tr><td>Step</td><td><input type="number" id="scriptvalue" min=1 max=1000 value=15></input> minutes</td></tr>
+</table>
+<!--
         <h4>Connections</h4>
     <table>
                 <tr><td>Up</td><td><select disabled><option>No Connection</option></select></td></tr>
@@ -43,15 +48,38 @@
     </table>
 <h4>Events</h4>
 <div class="side_notification">Not supported at this time.</div>
+-->
     </div>
     <div class="side_content">
-<h4>On This Map</h4>
-        <div class="side_notification">There are no people on this map.</div>
-
+    <h4>Description</h4>
+    <table>
+                <tr><td>Name</td><td><input type="text" value="Unnamed Character"></input></td></tr>
+                <tr><td>Image</td><td><input type="url" placeholder="http://example.png"></input></td></tr>
+    </table>
+    <h4>Properties</h4>
+    <table>
+                <tr><td>Script</td><td><input type="number" id="scriptvalue" min=0 max=2000 value=0></input> offset</td></tr>
+                <tr><td>Series</td><td><input type="number" id="scriptvalue" min=0 max=2000 value=0></input> timeline</td></tr>
+    </table>
+    <h4>Current Path</h4>
+    <table>
+                <tr><td>Type</td><td><select><option>None</option><option>Linear</option><option>Quadratic</option><option>B&eacute;zier</option></select></td></tr>
+                <tr><td>Start</td><td><input class="timeval" type="time"></input></td></tr>
+                <tr><td>End</td><td><input class="timeval" type="time"></input></td></tr>
+    </table>
+    <h4>Schedule</h4>
+    <h4>On This Map</h4>
+            <div class="side_notification">There are no people on this map.</div>
+            <div class="side_notification">Right click a tile to add a character.</div>
     </div>
-    <div class="side_content">There</div>
+    <div class="side_content">
+        <h4>Tileset</h4>
+        <h4>Movement</h4>
+        <h4>Current Event</h4>
+        <h4>Current Warp</h4>
+     </div>
 </div>
 <div id="timebar">
     <input id="timebox" type="time"></input>
-    <input id="timeslide" max=1439 min=0 value=0 type="range"/>
+    <input id="timeslide" max=1439 min=0 value=0 step=15 type="range"/>
 </div>
