@@ -152,6 +152,16 @@ function attachAllMenuListeners()
     
     // tabz
     $(".tab").click(function() { goTab((1+$(this).index())); });
+    
+    // map width and height
+    $("#mapwidth").change(function() { map.width = parseInt($(this).val()); draw(); });
+    $("#mapheight").change(function() { map.height = parseInt($(this).val()); draw(); });
+    
+    // step size
+    $("#scriptvalue").change(function() { $("#timeslide").attr("step", parseInt($(this).val())); });
+    
+    // background image
+    $("#urlbg").change(function() { var img = new Image(); map.image = $(this).val(); img.src = map.image; draw(); });
 };
 
 function pointAt(px, py)
@@ -314,9 +324,8 @@ function createChar(x, y)
     goTab(2);
 }
 
-function removeChar()
+function removeChar(char)
 {
-    
 }
 
 // returns whether or not a character exists at the given x y, 
@@ -375,11 +384,11 @@ function displayContextAt(x, y, px, py)
     var menu = document.createElement("div");
     $(menu).addClass("context_menu");
     
-    var point = pointAt(x, y);
+    var point = pointAt(x*zoom, y*zoom);
     
     if (point)
         // point was selected
-        canvasHighlight(x, y, 5);
+        canvasHighlight(x*zoom, y*zoom, 5);
     else
       canvasHighlight(x, y, 16);
     
@@ -388,7 +397,7 @@ function displayContextAt(x, y, px, py)
         var elem = document.createElement("div");
         $(elem).addClass("context_elem");
         elem.innerHTML = "Add Point";
-        elem.onclick = function(){ removeChar(char); };
+//        elem.onclick = function(){ removeChar(char); };
         menu.appendChild(elem);
         
         if (point.type != "linear")
@@ -549,6 +558,16 @@ function draw()
     resizeCanvas();
     
     context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // draw map bg
+    if (map.image)
+    {
+        context.globalAlpha = 0.7;
+        var img = new Image();
+        img.src = map.image;
+        context.drawImage(img, 0, 0);
+        context.globalAlpha = 1;
+    }
     
     // draw characters
     for (var x=0; x<map.chars.length; x++)
