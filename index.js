@@ -100,8 +100,8 @@ $(document).ready(function(){
                 dragging.type = "quadratic";
                 
                 // update point coordinates while dragging
-                dragging.cx1 = e.offsetX;
-                dragging.cy1 = e.offsetY;
+                dragging.cx1 = e.offsetX/zoom;
+                dragging.cy1 = e.offsetY/zoom;
             }
             
             draw();
@@ -157,6 +157,9 @@ function attachAllMenuListeners()
 function pointAt(px, py)
 {
     var returnme = null;
+    
+    px /= zoom;
+    py /= zoom;
     
     var chars = map.chars;
     for (var x=0; x<chars.length; x++)
