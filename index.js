@@ -531,6 +531,11 @@ function drawTweenedPosition(img, key1, pos, key2, npos)
 
     }
     
+    if (npos.type == "bezier")
+    {
+//        newx = 
+    }
+    
     // draw the tween image at the calculated position
     context.drawImage(img, newx, newy);
 }
