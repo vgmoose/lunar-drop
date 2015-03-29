@@ -479,7 +479,6 @@ function prevKey(time)
     var me = this.sched;
         
     for (var key in me) {
-        console.log(key);
           if (parseInt(key) > parseInt(time))
               break;
           lastKey = key;
@@ -498,6 +497,31 @@ function nextKey(time)
     }
 
     return 0;
+}
+
+function drawTweenedPosition(img, key1, pos, key2, npos)
+{
+    // the percent that the current key is along the path
+    var percent =  (time - key1) / (key2 - key1);
+    
+    // if it has nowhere to go
+    if (pos.x == npos.x && pos.y == npos.y)
+        return;
+        
+    if (npos.type == "linear")
+    {
+        var newx = pos.x*16 + (npos.x*16 - pos.x*16) * percent;
+        var newy = pos.y*16 + (npos.y*16 - pos.y*16) * percent;
+        
+        context.drawImage(img, newx, newy);
+    }
+    
+    // http://jsfiddle.net/m1erickson/LumMX/
+    
+    if (npos.type == "quadratic")
+    {
+        
+    }
 }
 
 function draw()
@@ -567,7 +591,13 @@ function draw()
         context.drawImage(me.image, pos.x*16, pos.y*16);
         
         if (key != time)
+        {
             context.globalAlpha = 1;
+            var nKey = me.nextKey(time);
+            
+            if (nKey != 0)
+                drawTweenedPosition(me.image, key, pos, nKey, me.sched[nKey]);
+        }
     }
     
     if (gridIsOn)
