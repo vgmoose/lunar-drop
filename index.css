@@ -10,6 +10,12 @@ input
     font-family: Arial;
 }
 
+a
+{
+    text-decoration: none;
+    color: #0000cc;
+}
+
 .toolbutton
 {
     height: 25px;

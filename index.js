@@ -301,6 +301,7 @@ function createChar(x, y)
     var newChar = {name: "Unnamed Character",
                     image: defaultImg,
                     prevKey: prevKey,
+                    nextKey: nextKey,
                    sched: {}
                    };
     newChar.sched[time] = {type: "static", x: parseInt(x/16), y: parseInt(y/16)};
@@ -330,7 +331,7 @@ function characterAt(cx, cy, anyTime)
     {
         var pos;
         if (anyTime)
-            pos = chars[x].sched[chars[x].prevKey()];
+            pos = chars[x].sched[chars[x].prevKey(time)];
         else
             pos = chars[x].sched[time];
         
@@ -359,7 +360,7 @@ function canvasHighlight(x, y, size)
 
 function insertKeyframe(char)
 {
-    var lastKey = char.prevKey();
+    var lastKey = char.prevKey(time);
     var pos = char.sched[lastKey];
     char.sched[time] = {type: "linear", x: pos.x, y: pos.y};
     draw();
@@ -387,11 +388,14 @@ function displayContextAt(x, y, px, py)
         elem.onclick = function(){ removeChar(char); };
         menu.appendChild(elem);
         
-        var elem = document.createElement("div");
-        $(elem).addClass("context_elem");
-        elem.innerHTML = "Make Linear";
-        elem.onclick = function(){     point.type = "linear"; };
-        menu.appendChild(elem);
+        if (point.type != "linear")
+        {
+            var elem = document.createElement("div");
+            $(elem).addClass("context_elem");
+            elem.innerHTML = "Make Linear";
+            elem.onclick = function(){     point.type = "linear"; };
+            menu.appendChild(elem);
+        }
     }
     
     var char = characterAt(x, y, true);
@@ -475,12 +479,25 @@ function prevKey(time)
     var me = this.sched;
         
     for (var key in me) {
+        console.log(key);
           if (parseInt(key) > parseInt(time))
               break;
           lastKey = key;
     }
 
     return lastKey;
+}
+
+function nextKey(time)
+{
+    var me = this.sched;
+        
+    for (var key in me) {
+          if (parseInt(key) > parseInt(time))
+              return key;
+    }
+
+    return 0;
 }
 
 function draw()
