@@ -505,23 +505,34 @@ function drawTweenedPosition(img, key1, pos, key2, npos)
     var percent =  (time - key1) / (key2 - key1);
     
     // if it has nowhere to go
-    if (pos.x == npos.x && pos.y == npos.y)
+    if ((pos.x == npos.x && pos.y == npos.y) || npos.type == "static")
         return;
+    
+    var nposx = npos.x*16;
+    var nposy = npos.y*16;
+    var posx = pos.x*16;
+    var posy = pos.y*16;
+    
+    var newx, newy;
         
     if (npos.type == "linear")
     {
-        var newx = pos.x*16 + (npos.x*16 - pos.x*16) * percent;
-        var newy = pos.y*16 + (npos.y*16 - pos.y*16) * percent;
+        newx = posx + (nposx - posx) * percent;
+        newy = posy + (nposy - posy) * percent;
         
-        context.drawImage(img, newx, newy);
     }
     
     // http://jsfiddle.net/m1erickson/LumMX/
     
     if (npos.type == "quadratic")
     {
-        
+        newx = Math.pow(1-percent, 2) * posx + 2*(1-percent)*percent*npos.cx1 + Math.pow(percent, 2)* nposx;
+        newy = Math.pow(1-percent, 2) * posy + 2*(1-percent)*percent*npos.cy1 + Math.pow(percent, 2)* nposy;
+
     }
+    
+    // draw the tween image at the calculated position
+    context.drawImage(img, newx, newy);
 }
 
 function draw()
