@@ -6,6 +6,38 @@ var time;
 var defaultImg;
 var dragging = null;
 
+/*
+TODO:
+make sidebar refresh with selection
+make sidebar buttons actually affect map
+make bezier curves
+remove point, remove keyframe, remove character
+splice keyframe
+make character animate along path
+make tileset things
+make movement things
+warps
+events
+on this map
+schedule
+timelines
+exporting of data to ld files
+save data using local storage
+multiple map editing
+
+DONE:
+time bar along bottom
+formatting of panels and main
+keyframe adding
+zooming
+grid
+time textbox in corner
+fields in sidebar
+right click context menu
+quadratic curves
+linear paths
+*/
+
 var map = {width: 44, height: 32, chars: []};
 
 $(document).ready(function(){
@@ -141,7 +173,6 @@ function pointAt(px, py)
         }
     }
     
-    console.log(returnme);
     return returnme;
 }
 
@@ -359,7 +390,7 @@ function displayContextAt(x, y, px, py)
         var elem = document.createElement("div");
         $(elem).addClass("context_elem");
         elem.innerHTML = "Make Linear";
-        elem.onclick = function(){ removeChar(char); };
+        elem.onclick = function(){     point.type = "linear"; };
         menu.appendChild(elem);
     }
     
