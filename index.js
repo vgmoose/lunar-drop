@@ -58,12 +58,18 @@ $(document).ready(function(){
         {
             if (dragging.sched)
             {
+                // update character coordinates while dragging
                 dragging.sched[time].x = parseInt(e.offsetX/zoom/16);
                 dragging.sched[time].y = parseInt(e.offsetY/zoom/16);
             }
-            else if (dragging.x)
+            else if (dragging.cx1)
             {
+                // this is now a quadratic line
+                dragging.type = "quadratic";
                 
+                // update point coordinates while dragging
+                dragging.cx1 = e.offsetX;
+                dragging.cy1 = e.offsetY;
             }
             
             draw();
@@ -116,9 +122,27 @@ function attachAllMenuListeners()
     $(".tab").click(function() { goTab((1+$(this).index())); });
 };
 
-function pointAt()
+function pointAt(px, py)
 {
+    var returnme = null;
     
+    var chars = map.chars;
+    for (var x=0; x<chars.length; x++)
+    {
+        var pos = chars[x].sched[time];
+        
+        if (!pos)
+            continue;
+        
+        if (pos.cx1 >= px - 5 && pos.cx1 <= px +5
+            && pos.cy1 >= py - 5 && pos.cy1 <= py + 5)
+        {
+            returnme = pos;
+        }
+    }
+    
+    console.log(returnme);
+    return returnme;
 }
 
 function convertMinutesToTime(curMin)
@@ -289,11 +313,17 @@ function characterAt(cx, cy, anyTime)
     return returnme;
 }
 
-function canvasHighlight(x, y)
+function canvasHighlight(x, y, size)
 {
     context.strokeStyle = "#238df5";
     context.strokeWidth = "2";
-    context.strokeRect(Math.floor(x/16)*16, Math.floor(y/16)*16, 16, 16);
+    if (size == 16)
+        context.strokeRect(Math.floor(x/16)*16, Math.floor(y/16)*16, 16, 16);
+    else if (size == 5)
+    {
+        var point = pointAt(x, y);
+        context.strokeRect(point.cx1-2.5, point.cy1-2.5, 5, 5);
+    }
 }
 
 function insertKeyframe(char)
@@ -310,7 +340,29 @@ function displayContextAt(x, y, px, py)
     var menu = document.createElement("div");
     $(menu).addClass("context_menu");
     
-    canvasHighlight(x, y);
+    var point = pointAt(x, y);
+    
+    if (point)
+        // point was selected
+        canvasHighlight(x, y, 5);
+    else
+      canvasHighlight(x, y, 16);
+    
+    if (point)
+    {
+        var elem = document.createElement("div");
+        $(elem).addClass("context_elem");
+        elem.innerHTML = "Add Point";
+        elem.onclick = function(){ removeChar(char); };
+        menu.appendChild(elem);
+        
+        var elem = document.createElement("div");
+        $(elem).addClass("context_elem");
+        elem.innerHTML = "Make Linear";
+        elem.onclick = function(){ removeChar(char); };
+        menu.appendChild(elem);
+    }
+    
     var char = characterAt(x, y, true);
     
     // if a character is here
@@ -347,7 +399,7 @@ function displayContextAt(x, y, px, py)
             menu.appendChild(elem);
         }
     }
-    else
+    else if (!point)
     {
         // do specific action based on x anad y coordinates in canvas
         var elem = document.createElement("div");
