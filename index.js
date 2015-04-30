@@ -222,7 +222,7 @@ function convertTimeToMinutes(curTime)
 function drawGrid()
 {
     // draw lines
-    for (var x=16.5; x<canvas.width; x+=16)
+    for (var x=16.5; x<Math.max(canvas.width, canvas.height); x+=16)
     {
         
         context.strokeStyle = 'rgba(170,170,170,0.7)';
