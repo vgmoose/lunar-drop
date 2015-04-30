@@ -308,6 +308,11 @@ body {
     width: 80px;
 }
 
+#downloaddiv
+{
+    display: none;
+}
+
 input[type="time"]::-webkit-clear-button {
     display: none;
 }

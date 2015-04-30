@@ -113,7 +113,12 @@ $(document).ready(function(){
     
     $(canvas).on('mouseup', function(e) {
         
-       dragging = null;
+        if (dragging && dragging.index)
+            delete dragging.index;
+        
+        dragging = null;
+        
+        
         
         e.preventDefault();
     }); 
@@ -150,6 +155,7 @@ function attachAllMenuListeners()
     $("#zoomout").click(function() { zoomOut() });
     $("#zoomin").click(function() { zoomIn() });
     $("#gridtoggle").click(function() { gridToggle() });
+    $("#exportdata").click(function() { exportData() });
     
     // tabz
     $(".tab").click(function() { goTab((1+$(this).index())); });
@@ -586,6 +592,22 @@ function drawTweenedPosition(img, key1, pos, key2, npos)
     context.drawImage(img, newx, newy);
 }
 
+function replacer(key, value) {
+
+    if (value.nodeName || typeof value == "function")
+        return undefined;
+    
+  return value;
+}
+
+function exportData()
+{
+    var sh = btoa(JSON.stringify(map, replacer, 4));
+    $("#downloaddiv").html("<a id='downlink' download='map.ld' href='data:text/x-bsh;base64,"+sh+"'>download</a>");
+    actuateLink(document.getElementById("downlink"));
+    
+}
+
 function draw()
 {
     // resizeCanvas
@@ -630,7 +652,7 @@ function draw()
             var midpoint = midPoint(past.x*16+8, past.y*16+8, pos.x*16+8, pos.y*16+8);
             
             // draw the path
-            if (pos.type == "none" || (pos.x == past.x && pos.y == past.y && pos.type == "linear"))
+            if (pos.type == "static" || (pos.x == past.x && pos.y == past.y && pos.type == "linear"))
             {
                 
             }
@@ -717,4 +739,33 @@ function CubicN(pct, a, b, c, d) {
     var t2 = pct * pct;
     var t3 = t2 * pct;
     return a + (-a * 3 + pct * (3 * a - a * pct)) * pct + (3 * b + pct * (-6 * b + b * 3 * pct)) * pct + (c * 3 - c * 3 * pct) * t2 + d * t3;
+}
+
+function actuateLink(link)
+{
+    var allowDefaultAction = true;
+    
+    if (link.click)
+    {
+        link.click();
+        return;
+    }
+    else if (document.createEvent)
+    {
+        var e = document.createEvent('MouseEvents');
+        e.initEvent(
+                    'click'     // event type
+                    ,true      // can bubble?
+                    ,true      // cancelable?
+                    );
+        allowDefaultAction = link.dispatchEvent(e);
+    }
+    
+    if (allowDefaultAction)
+    {
+        var f = document.createElement('form');
+        f.action = link.href;
+        document.body.appendChild(f);
+        f.submit();
+    }
 }
