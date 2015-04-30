@@ -94,14 +94,15 @@ $(document).ready(function(){
                 dragging.sched[time].x = parseInt(e.offsetX/zoom/16);
                 dragging.sched[time].y = parseInt(e.offsetY/zoom/16);
             }
-            else if (dragging.cx1)
+            else if (dragging.index)
             {
                 // this is now a quadratic line
-                dragging.type = "quadratic";
+                if (dragging.type != "bezier")
+                    dragging.type = "quadratic";
                 
                 // update point coordinates while dragging
-                dragging.cx1 = e.offsetX/zoom;
-                dragging.cy1 = e.offsetY/zoom;
+                dragging["cx"+dragging.index] = e.offsetX/zoom;
+                dragging["cy"+dragging.index] = e.offsetY/zoom;
             }
             
             draw();
@@ -167,6 +168,7 @@ function attachAllMenuListeners()
 function pointAt(px, py)
 {
     var returnme = null;
+    var index = -1;
     
     px /= zoom;
     py /= zoom;
@@ -183,6 +185,14 @@ function pointAt(px, py)
             && pos.cy1 >= py - 5 && pos.cy1 <= py + 5)
         {
             returnme = pos;
+            pos.index = 1;
+        }
+        
+        if (pos.cx2 >= px - 5 && pos.cx2 <= px +5
+            && pos.cy2 >= py - 5 && pos.cy2 <= py + 5)
+        {
+            returnme = pos;
+            pos.index = 2;
         }
     }
     
@@ -394,18 +404,41 @@ function displayContextAt(x, y, px, py)
     
     if (point)
     {
-        var elem = document.createElement("div");
-        $(elem).addClass("context_elem");
-        elem.innerHTML = "Add Point";
-//        elem.onclick = function(){ removeChar(char); };
-        menu.appendChild(elem);
+        if (point.type != "bezier")
+        {
+            var elem = document.createElement("div");
+            $(elem).addClass("context_elem");
+            elem.innerHTML = "Add Point";
+            elem.onclick = function(){ 
+                point.type = "bezier";
+            };
+            menu.appendChild(elem);
+        }
         
         if (point.type != "linear")
         {
             var elem = document.createElement("div");
             $(elem).addClass("context_elem");
             elem.innerHTML = "Make Linear";
-            elem.onclick = function(){     point.type = "linear"; };
+            elem.onclick = function(){ point.type = "linear"; };
+            menu.appendChild(elem);
+        }
+        
+        if (point.type == "bezier")
+        {
+            var elem = document.createElement("div");
+            $(elem).addClass("context_elem");
+            elem.innerHTML = "Remove Point";
+            elem.onclick = function(){
+                if (point.index == 1)
+                {
+                    point.cx1 = point.cx2;
+                    point.cy1 = point.cy2;
+                }
+                delete point.cx2;
+                delete point.cy2;
+                point.type = "quadratic"; 
+            };
             menu.appendChild(elem);
         }
     }
@@ -517,7 +550,7 @@ function drawTweenedPosition(img, key1, pos, key2, npos)
     var percent =  (time - key1) / (key2 - key1);
     
     // if it has nowhere to go
-    if ((pos.x == npos.x && pos.y == npos.y) || npos.type == "static")
+    if ((pos.x == npos.x && pos.y == npos.y && npos.y == "linear") || npos.type == "static")
         return;
     
     var nposx = npos.x*16;
@@ -545,7 +578,8 @@ function drawTweenedPosition(img, key1, pos, key2, npos)
     
     if (npos.type == "bezier")
     {
-//        newx = 
+        newx = CubicN(percent, posx, npos.cx1, npos.cx2, nposx);
+        newy = CubicN(percent, posy, npos.cy1, npos.cy2, nposy);
     }
     
     // draw the tween image at the calculated position
@@ -596,7 +630,7 @@ function draw()
             var midpoint = midPoint(past.x*16+8, past.y*16+8, pos.x*16+8, pos.y*16+8);
             
             // draw the path
-            if (pos.type == "none" || (pos.x == past.x && pos.y == past.y))
+            if (pos.type == "none" || (pos.x == past.x && pos.y == past.y && pos.type == "linear"))
             {
                 
             }
@@ -604,6 +638,11 @@ function draw()
             {
                 pos.cx1 = midpoint.x;
                 pos.cy1 = midpoint.y;
+                if (pos.cx2)
+                {
+                    delete pos.cx2;
+                    delete pos.cy2;
+                }
                 context.fillRect(pos.cx1-2.5, pos.cy1-2.5, 5, 5);
                 context.quadraticCurveTo(pos.cx1, pos.cy1, pos.x*16+8, pos.y*16+8);
 //                context.lineTo(pos.x*16+8, pos.y*16+8);
@@ -615,6 +654,20 @@ function draw()
             }
             else if (pos.type == "bezier")
             {
+                // if it wasn't already bezier
+                if (!pos.cx2)
+                {
+                    var old = {x: pos.cx1, y: pos.cy1};
+                    var newc1 = midPoint(past.x*16+8, past.y*16+8, old.x, old.y);
+                    pos.cx1 = newc1.x;
+                    pos.cy1 = newc1.y;
+                    
+                    var newc2 = midPoint(pos.x*16+8, pos.y*16+8, old.x, old.y);
+                    pos.cx2 = newc2.x;
+                    pos.cy2 = newc2.y;
+
+                }
+                
                 context.fillRect(pos.cx1-2.5, pos.cy1-2.5, 5, 5);
                 context.fillRect(pos.cx2-2.5, pos.cy2-2.5, 5, 5);
                 context.bezierCurveTo(pos.cx1, pos.cy1, pos.cx2, pos.cy2, pos.x*16+8, pos.y*16+8);
@@ -657,4 +710,11 @@ function draw()
 //      context.fillRect(p[1][0], p[1][1], size, size);
 //      context.fillRect(p[2][0], p[2][1], size, size);
 //      context.fillRect(p[3][0], p[3][1], size, size);
+}
+
+// cubic helper formula at percent distance
+function CubicN(pct, a, b, c, d) {
+    var t2 = pct * pct;
+    var t3 = t2 * pct;
+    return a + (-a * 3 + pct * (3 * a - a * pct)) * pct + (3 * b + pct * (-6 * b + b * 3 * pct)) * pct + (c * 3 - c * 3 * pct) * t2 + d * t3;
 }
