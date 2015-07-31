@@ -10,10 +10,8 @@ var dragging = null;
 TODO:
 make sidebar refresh with selection
 make sidebar buttons actually affect map
-make bezier curves
-remove point, remove keyframe, remove character
-splice keyframe
-make character animate along path
+make character move along curves with uniform speed https://www.geometrictools.com/Documentation/MovingAlongCurveSpecifiedSpeed.pdf
+remove keyframe, remove character
 make tileset things
 make movement things
 warps
@@ -21,7 +19,6 @@ events
 on this map
 schedule
 timelines
-exporting of data to ld files
 save data using local storage
 multiple map editing
 
@@ -36,6 +33,12 @@ fields in sidebar
 right click context menu
 quadratic curves
 linear paths
+splice keyframe
+make bezier curves
+make character animate along path
+remove point
+exporting of data to ld files
+
 */
 
 var map = {width: 44, height: 32, chars: []};
